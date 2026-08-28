@@ -1,0 +1,17 @@
+{
+  "name": "portfolio-root",
+  "version": "1.0.0",
+  "description": "Production-quality MERN Stack Portfolio Website Root",
+  "private": true,
+  "scripts": {
+    "client": "npm run dev --prefix client",
+    "server": "npm run dev --prefix server",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "seed": "npm run seed --prefix server",
+    "seed-admin": "npm run seed-admin --prefix server",
+    "seed-cms": "npm run seed-cms --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

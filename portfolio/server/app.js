@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 import notFoundMiddleware from './middleware/notFoundMiddleware.js';
 import errorMiddleware from './middleware/errorMiddleware.js';
 
-// Import Routes (Architectural Placeholders)
+// Import Routes
 import projectRoutes from './routes/projectRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -22,31 +22,77 @@ import achievementRoutes from './routes/achievementRoutes.js';
 
 const app = express();
 
-// CORS configuration matching environment client URL
-const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-const allowedOrigins = clientUrl.split(',').map(url => url.trim());
+// CORS Configuration
+const configuredOrigins = (
+  process.env.CLIENT_URL || 'http://localhost:5173'
+)
+  .split(',')
+  .map(url => url.trim())
+  .filter(Boolean);
 
-// Enable fallback local development origins if in development mode
-if (process.env.NODE_ENV !== 'production') {
-  const localDevOrigins = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://localhost:5174',
-    'http://127.0.0.1:5174',
-    'http://localhost:5175',
-    'http://127.0.0.1:5175'
-  ];
-  localDevOrigins.forEach(origin => {
-    if (!allowedOrigins.includes(origin)) {
-      allowedOrigins.push(origin);
-    }
-  });
-}
+const localDevOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5174',
+  'http://localhost:5175',
+  'http://127.0.0.1:5175'
+];
+
+const allowedOrigins = [
+  ...new Set([
+    ...configuredOrigins,
+    ...localDevOrigins
+  ])
+];
 
 app.use(cors({
-  origin: allowedOrigins,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: (origin, callback) => {
+
+    // Allow requests without origin
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    const isAllowedExactOrigin = allowedOrigins.includes(origin);
+
+    const isVercelOrigin =
+      /^https:\/\/.*\.vercel\.app$/i.test(origin);
+
+    const isRenderOrigin =
+      /^https:\/\/.*\.onrender\.com$/i.test(origin);
+
+    const isLocalOrigin =
+      /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/i.test(origin);
+
+    if (
+      isAllowedExactOrigin ||
+      isVercelOrigin ||
+      isRenderOrigin ||
+      isLocalOrigin
+    ) {
+      return callback(null, true);
+    }
+
+    return callback(
+      new Error(`Origin ${origin} not allowed by CORS`)
+    );
+  },
+
+  methods: [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS'
+  ],
+
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization'
+  ],
+
   credentials: true
 }));
 
@@ -54,7 +100,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// API Health Check Route
+// API Health Check
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     success: true,
@@ -72,10 +118,10 @@ app.use('/api/experience', experienceRoutes);
 app.use('/api/education', educationRoutes);
 app.use('/api/achievements', achievementRoutes);
 
-// Fallback Middleware for 404 Not Found
+// 404 Middleware
 app.use(notFoundMiddleware);
 
-// Centralized Error Handler Middleware
+// Error Middleware
 app.use(errorMiddleware);
 
 export default app;

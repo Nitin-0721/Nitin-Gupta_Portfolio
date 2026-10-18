@@ -137,7 +137,7 @@ export default function Experience() {
                             <Shield className="w-3.5 h-3.5" /> {exp.location}
                           </span>
                         )}
-                        <h3 className="text-xl font-display font-extrabold text-[#080808] dark:text-[#F5F5F5] leading-snug">{exp.position}</h3>
+                        <h3 className="experience-role-title text-xl font-display font-extrabold text-[#080808] dark:text-[#F5F5F5] leading-snug">{exp.position}</h3>
                         <h4 className="text-md font-bold text-slate-700 dark:text-[#B8B8B8] mt-1 flex items-center gap-1.5">
                           <Briefcase className="w-4 h-4 text-slate-400 dark:text-[#D01F35]" /> {exp.company}
                         </h4>

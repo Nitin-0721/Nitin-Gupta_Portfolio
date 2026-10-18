@@ -157,7 +157,7 @@ footer h2, footer h3, footer p {
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 #about h2, #about h3, #about p,
-#experience h2, #experience h3, #experience p,
+#experience h2, #experience p,
 #achievements h2, #achievements h3, #achievements p,
 #contact h2, #contact h3, #contact p {
   color: #F5F5F5 !important;
@@ -181,9 +181,7 @@ footer h2, footer h3, footer p {
   border: 1px solid rgba(245, 245, 245, 0.12) !important;
   color: #F5F5F5 !important;
 }
-#about div.bg-white h4,
-#experience div.bg-slate-50 h3,
-#experience div.bg-white h3 {
+#about div.bg-white h4 {
   color: #F5F5F5 !important;
 }
 
@@ -428,4 +426,21 @@ header a.text-blue-600 {
   stroke: #080808 !important;
   opacity: 1 !important;
   visibility: visible !important;
+}
+
+/* Custom Experience Role Title (SOC Intern, AI Engineer, Java Developer) */
+.experience-role-title,
+#experience h3 {
+  color: #080808 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  -webkit-text-fill-color: #080808 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .experience-role-title,
+  #experience h3 {
+    color: #F5F5F5 !important;
+    -webkit-text-fill-color: #F5F5F5 !important;
+  }
 }

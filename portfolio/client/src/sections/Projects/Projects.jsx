@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import SectionTitle from '../../components/common/SectionTitle.jsx';
 import ProjectCard from './ProjectCard.jsx';
 import { getProjects } from '../../services/projectService.js';
+import { DEFAULT_PROJECTS } from '../../constants/portfolioData.js';
 import Loader from '../../components/ui/Loader.jsx';
 import ErrorMessage from '../../components/ui/ErrorMessage.jsx';
 import { ArrowUpRight, Globe, Image } from 'lucide-react';
@@ -13,8 +14,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Projects() {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState(DEFAULT_PROJECTS);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const containerRef = useRef(null);
   const listRef = useRef(null);
@@ -22,16 +23,19 @@ export default function Projects() {
 
   const fetchProjectsData = async () => {
     try {
-      setLoading(true);
       setError('');
       const response = await getProjects();
-      if (response.success && Array.isArray(response.data)) {
+      if (response.success && Array.isArray(response.data) && response.data.length > 0) {
         setProjects(response.data);
-      } else {
-        setError('Failed to fetch projects data.');
       }
     } catch (err) {
-      setError(err.message || 'Error occurred while loading projects.');
+      console.warn('Backend unavailable or waking up, using fallback projects:', err.message);
+      setProjects((prev) => {
+        if (!prev || prev.length === 0) {
+          setError(err.message || 'Error occurred while loading projects.');
+        }
+        return prev;
+      });
     } finally {
       setLoading(false);
     }

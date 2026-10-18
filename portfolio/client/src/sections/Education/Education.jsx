@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SectionTitle from '../../components/common/SectionTitle.jsx';
 import { getEducations } from '../../services/educationService.js';
+import { DEFAULT_EDUCATIONS } from '../../constants/portfolioData.js';
 import Loader from '../../components/ui/Loader.jsx';
 import ErrorMessage from '../../components/ui/ErrorMessage.jsx';
 import { GraduationCap, MapPin, Calendar } from 'lucide-react';
@@ -10,24 +11,27 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Education() {
-  const [educations, setEducations] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [educations, setEducations] = useState(DEFAULT_EDUCATIONS);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const containerRef = useRef(null);
   const cardsContainerRef = useRef(null);
 
   const fetchEducationData = async () => {
     try {
-      setLoading(true);
       setError('');
       const response = await getEducations();
-      if (response.success && Array.isArray(response.data)) {
+      if (response.success && Array.isArray(response.data) && response.data.length > 0) {
         setEducations(response.data);
-      } else {
-        setError('Failed to fetch education records.');
       }
     } catch (err) {
-      setError(err.message || 'Error occurred while loading education.');
+      console.warn('Backend unavailable or waking up, using fallback educations:', err.message);
+      setEducations((prev) => {
+        if (!prev || prev.length === 0) {
+          setError(err.message || 'Error occurred while loading education.');
+        }
+        return prev;
+      });
     } finally {
       setLoading(false);
     }

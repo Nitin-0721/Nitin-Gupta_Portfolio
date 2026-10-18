@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SectionTitle from '../../components/common/SectionTitle.jsx';
 import { getAchievements } from '../../services/achievementService.js';
+import { DEFAULT_ACHIEVEMENTS } from '../../constants/portfolioData.js';
 import Loader from '../../components/ui/Loader.jsx';
 import ErrorMessage from '../../components/ui/ErrorMessage.jsx';
 import { Award, Trophy, Code, Target, BookOpen, Users, Palette, Cpu, ExternalLink } from 'lucide-react';
@@ -25,24 +26,27 @@ const getAchievementIcon = (title) => {
 };
 
 export default function Achievements() {
-  const [achievements, setAchievements] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [achievements, setAchievements] = useState(DEFAULT_ACHIEVEMENTS);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const containerRef = useRef(null);
   const gridRef = useRef(null);
 
   const fetchAchievementsData = async () => {
     try {
-      setLoading(true);
       setError('');
       const response = await getAchievements();
-      if (response.success && Array.isArray(response.data)) {
+      if (response.success && Array.isArray(response.data) && response.data.length > 0) {
         setAchievements(response.data);
-      } else {
-        setError('Failed to fetch achievements records.');
       }
     } catch (err) {
-      setError(err.message || 'Error occurred while loading achievements.');
+      console.warn('Backend unavailable or waking up, using fallback achievements:', err.message);
+      setAchievements((prev) => {
+        if (!prev || prev.length === 0) {
+          setError(err.message || 'Error occurred while loading achievements.');
+        }
+        return prev;
+      });
     } finally {
       setLoading(false);
     }

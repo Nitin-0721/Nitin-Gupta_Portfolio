@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SectionTitle from '../../components/common/SectionTitle.jsx';
 import { getExperiences } from '../../services/experienceService.js';
+import { DEFAULT_EXPERIENCES } from '../../constants/portfolioData.js';
 import Loader from '../../components/ui/Loader.jsx';
 import ErrorMessage from '../../components/ui/ErrorMessage.jsx';
 import { Briefcase, Calendar, Shield } from 'lucide-react';
@@ -10,8 +11,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Experience() {
-  const [experiences, setExperiences] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [experiences, setExperiences] = useState(DEFAULT_EXPERIENCES);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const containerRef = useRef(null);
   const timelineLineRef = useRef(null);
@@ -19,16 +20,19 @@ export default function Experience() {
 
   const fetchExperienceData = async () => {
     try {
-      setLoading(true);
       setError('');
       const response = await getExperiences();
-      if (response.success && Array.isArray(response.data)) {
+      if (response.success && Array.isArray(response.data) && response.data.length > 0) {
         setExperiences(response.data);
-      } else {
-        setError('Failed to fetch experience entries.');
       }
     } catch (err) {
-      setError(err.message || 'Error loading experience data.');
+      console.warn('Backend unavailable or waking up, using fallback experiences:', err.message);
+      setExperiences((prev) => {
+        if (!prev || prev.length === 0) {
+          setError(err.message || 'Error loading experience data.');
+        }
+        return prev;
+      });
     } finally {
       setLoading(false);
     }

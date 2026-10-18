@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SectionTitle from '../../components/common/SectionTitle.jsx';
 import { getSkills } from '../../services/skillService.js';
+import { DEFAULT_SKILLS } from '../../constants/portfolioData.js';
 import Loader from '../../components/ui/Loader.jsx';
 import ErrorMessage from '../../components/ui/ErrorMessage.jsx';
 import gsap from 'gsap';
@@ -109,24 +110,28 @@ function Skill3DCard({ cat, idx }) {
 }
 
 export default function Skills() {
-  const [skills, setSkills] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [skills, setSkills] = useState(DEFAULT_SKILLS);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const containerRef = useRef(null);
   const gridRef = useRef(null);
 
   const fetchSkillsData = async () => {
     try {
-      setLoading(true);
       setError('');
       const response = await getSkills();
-      if (response.success && Array.isArray(response.data)) {
+      if (response.success && Array.isArray(response.data) && response.data.length > 0) {
         setSkills(response.data);
-      } else {
-        setError('Failed to load skills details.');
       }
     } catch (err) {
-      setError(err.message || 'Error occurred while loading skills.');
+      console.warn('Backend unavailable or waking up, using fallback skills:', err.message);
+      // Only display error card if there is no skill data to render at all
+      setSkills((prev) => {
+        if (!prev || prev.length === 0) {
+          setError(err.message || 'Error occurred while loading skills.');
+        }
+        return prev;
+      });
     } finally {
       setLoading(false);
     }

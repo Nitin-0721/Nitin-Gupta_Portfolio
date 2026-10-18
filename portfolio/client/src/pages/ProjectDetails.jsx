@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Cpu, CheckCircle } from 'lucide-react';
 import { GitHubIcon } from '../components/common/SocialLinks.jsx';
 import { getProjectBySlug } from '../services/projectService.js';
+import { DEFAULT_PROJECTS } from '../constants/portfolioData.js';
 import Navbar from '../components/layout/Navbar.jsx';
 import Footer from '../components/layout/Footer.jsx';
 import Button from '../components/common/Button.jsx';
@@ -13,8 +14,9 @@ import { setPageMeta } from '../utils/seo.js';
 export default function ProjectDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const fallbackProject = DEFAULT_PROJECTS.find(p => p.slug === slug || p._id === slug) || null;
+  const [project, setProject] = useState(fallbackProject);
+  const [loading, setLoading] = useState(!fallbackProject);
   const [error, setError] = useState('');
 
   // SEO page headers dynamic handler
@@ -32,15 +34,20 @@ export default function ProjectDetails() {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        setLoading(true);
+        if (!fallbackProject) setLoading(true);
         const response = await getProjectBySlug(slug);
         if (response.success && response.data) {
           setProject(response.data);
-        } else {
+          setError('');
+        } else if (!fallbackProject) {
           setError('Project not found');
         }
       } catch (err) {
-        setError(err.message || 'Error fetching project details');
+        console.warn('Backend unavailable, using fallback project:', err.message);
+        setProject((prev) => {
+          if (!prev) setError(err.message || 'Error fetching project details');
+          return prev;
+        });
       } finally {
         setLoading(false);
       }

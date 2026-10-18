@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { autoSeedIfEmpty } from '../utils/autoSeed.js';
 
 /**
  * Establish connection to MongoDB using Mongoose.
@@ -14,6 +15,9 @@ const connectDB = async () => {
 
     const conn = await mongoose.connect(mongoUri);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+
+    // Auto-seed collections if empty
+    await autoSeedIfEmpty();
   } catch (error) {
     console.error(`MongoDB Connection Error: ${error.message}`);
     process.exit(1);

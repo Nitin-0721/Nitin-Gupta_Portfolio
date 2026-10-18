@@ -158,7 +158,7 @@ footer h2, footer h3, footer p {
 }
 #about h2, #about h3, #about p,
 #experience h2, #experience p,
-#achievements h2, #achievements h3, #achievements p,
+#achievements h2, #achievements h3,
 #contact h2, #contact h3, #contact p {
   color: #F5F5F5 !important;
 }
@@ -189,7 +189,7 @@ footer h2, footer h3, footer p {
 #about h2, #experience h2, #achievements h2, #contact h2 {
   color: #F5F5F5 !important;
 }
-#about p, #experience p, #achievements p, #contact p {
+#about p, #experience p, #achievements .mb-12 p, #contact p {
   color: rgba(245, 245, 245, 0.8) !important;
 }
 
@@ -442,5 +442,24 @@ header a.text-blue-600 {
   #experience h3 {
     color: #F5F5F5 !important;
     -webkit-text-fill-color: #F5F5F5 !important;
+  }
+}
+
+/* Custom Achievement Card Description (RBI Quiz, etc.) */
+#achievements .achievement-card-desc,
+#achievements div.rounded-2xl p {
+  color: #555555 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  -webkit-text-fill-color: #555555 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  #achievements .achievement-card-desc,
+  #achievements div.rounded-2xl p {
+    color: #B8B8B8 !important;
+    -webkit-text-fill-color: #B8B8B8 !important;
   }
 }

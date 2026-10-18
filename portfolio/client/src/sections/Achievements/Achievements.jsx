@@ -111,24 +111,8 @@ export default function Achievements() {
             {achievements.map((item, idx) => {
               const numberLabel = String(idx + 1).padStart(2, '0');
 
-              // Parse out the metrics (e.g. 1600+, 425+, 2★) from title/description
-              const regex = /^(\d+\+?|\d+★|[A-Z]{3,4})\s*(.*)$/;
-              let bigText = '';
-              let subText = '';
-
-              const titleMatch = item.title.match(regex);
-              const descMatch = item.description.match(regex);
-
-              if (titleMatch) {
-                bigText = titleMatch[1];
-                subText = titleMatch[2] || item.description;
-              } else if (descMatch) {
-                bigText = descMatch[1];
-                subText = descMatch[2] || item.title;
-              } else {
-                bigText = item.title;
-                subText = item.description;
-              }
+              const bigText = item.title;
+              const subText = item.description;
 
               return (
                 <div
@@ -144,21 +128,16 @@ export default function Achievements() {
                       </div>
                     </div>
 
-                    {/* Metric Number */}
+                    {/* Metric / Title */}
                     <div className="text-3xl font-black tracking-tight text-[#B11226] dark:text-white font-display break-words whitespace-normal leading-none">
                       {bigText}
                     </div>
 
-                    {/* Title & Description */}
+                    {/* Description */}
                     <div className="space-y-1.5 min-w-0">
                       <h4 className="text-sm font-bold tracking-normal text-[#080808] dark:text-[#F5F5F5] leading-snug break-words whitespace-normal">
                         {subText}
                       </h4>
-                      {item.description && item.description !== subText && item.description !== item.title && (
-                        <p className="text-xs text-[#555555] dark:text-[#F5F5F5]/75 leading-relaxed break-words whitespace-normal font-medium">
-                          {item.description}
-                        </p>
-                      )}
                     </div>
                   </div>
 
